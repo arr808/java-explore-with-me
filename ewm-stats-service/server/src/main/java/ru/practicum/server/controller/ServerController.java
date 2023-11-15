@@ -29,7 +29,7 @@ public class ServerController {
     private final ServerService service;
 
     @Autowired
-    public ServerController (ServerService service) {
+    public ServerController(ServerService service) {
         this.service = service;
     }
 
