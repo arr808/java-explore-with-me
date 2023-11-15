@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   stats-server:
-    build: ewm-stats-service/server
+    build: ewm-stats-service/stat-server
     image: stats_image
     container_name: stats_container
     ports:
