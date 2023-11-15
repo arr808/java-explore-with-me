@@ -36,7 +36,7 @@ public class ServerController {
     @GetMapping("/stats")
     public List<ShortStatDto> get(@RequestParam(name = "start") String startStr,
                                   @RequestParam(name = "end") String endStr,
-                                  @RequestParam(required = false, defaultValue = "") List<String> uris,
+                                  @RequestParam(required = false) List<String> uris,
                                   @RequestParam(defaultValue = "false") Boolean unique) {
         log.info("Получен запрос GET /stats?start={}&end={}&uris={}&unique={}", startStr, endStr, uris, unique);
         LocalDateTime start = LocalDateTime.parse(startStr, FORMATTER);
