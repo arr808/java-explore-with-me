@@ -28,8 +28,13 @@ public class ServerServiceImpl implements ServerService {
     @Override
     @Transactional(readOnly = true)
     public List<ShortStatDto> get(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-        if (unique) return repository.findAllUnique(start, end, uris);
-        return repository.findAllNotUnique(start, end, uris);
+        if (uris != null) {
+            if (unique) return repository.findAllUniqueInUris(start, end, uris);
+            return repository.findAllNotUniqueInUris(start, end, uris);
+        } else {
+            if (unique) return repository.findAllUnique(start, end);
+            return repository.findAllNotUnique(start, end);
+        }
     }
 
     @Override
