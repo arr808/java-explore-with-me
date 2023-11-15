@@ -9,13 +9,13 @@ services:
     depends_on:
       - stats-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/stats
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats
       - POSTGRES_USER=stats
       - POSTGRES_PASSWORD=stats
 
   stats-db:
     image: postgres:14-alpine
-    container_name: stats_db_container
+    container_name: stats-db
     ports:
       - "6541:5432"
     environment:
@@ -32,13 +32,13 @@ services:
     depends_on:
       - ewm-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/service
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/service
       - POSTGRES_USER=service
       - POSTGRES_PASSWORD=service
 
   ewm-db:
     image: postgres:14-alpine
-    container_name: ewm_db_container
+    container_name: ewm-db
     ports:
       - "6540:5432"
     environment:
