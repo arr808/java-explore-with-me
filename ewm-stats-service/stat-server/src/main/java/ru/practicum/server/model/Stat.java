@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @Entity
-@Table(name = "hit")
-public class EndpointHit {
+@Table(name = "stat")
+public class Stat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

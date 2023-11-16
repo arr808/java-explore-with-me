@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.ShortStatDto;
 import ru.practicum.dto.StatDto;
-import ru.practicum.server.model.EndpointHit;
+import ru.practicum.server.model.Stat;
 import ru.practicum.server.repository.ServerRepository;
 import ru.practicum.server.util.HitMapper;
 
@@ -28,18 +28,13 @@ public class ServerServiceImpl implements ServerService {
     @Override
     @Transactional(readOnly = true)
     public List<ShortStatDto> get(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-        if (uris != null) {
-            if (unique) return repository.findAllUniqueInUris(start, end, uris);
-            return repository.findAllNotUniqueInUris(start, end, uris);
-        } else {
-            if (unique) return repository.findAllUnique(start, end);
-            return repository.findAllNotUnique(start, end);
-        }
+        if (unique) return repository.findAllUniqueInUris(start, end, uris);
+        return repository.findAllNotUniqueInUris(start, end, uris);
     }
 
     @Override
     public StatDto add(StatDto statDto) {
-        EndpointHit hit = HitMapper.fromDto(statDto);
+        Stat hit = HitMapper.fromDto(statDto);
         return HitMapper.toDto(repository.save(hit));
     }
 }

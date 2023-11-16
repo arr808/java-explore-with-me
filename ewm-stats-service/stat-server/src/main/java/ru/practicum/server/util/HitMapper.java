@@ -3,12 +3,12 @@ package ru.practicum.server.util;
 import lombok.experimental.UtilityClass;
 
 import ru.practicum.dto.StatDto;
-import ru.practicum.server.model.EndpointHit;
+import ru.practicum.server.model.Stat;
 
 @UtilityClass
 public class HitMapper {
 
-    public static StatDto toDto(EndpointHit hit) {
+    public static StatDto toDto(Stat hit) {
         return StatDto.builder()
                 .app(hit.getApp())
                 .uri(hit.getUri())
@@ -17,8 +17,8 @@ public class HitMapper {
                 .build();
     }
 
-    public static EndpointHit fromDto(StatDto statDto) {
-        return EndpointHit.builder()
+    public static Stat fromDto(StatDto statDto) {
+        return Stat.builder()
                 .app(statDto.getApp())
                 .uri(statDto.getUri())
                 .ip(statDto.getIp())
