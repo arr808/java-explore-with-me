@@ -162,7 +162,7 @@ public class Mapper {
 
         EventStateAction updateState = updateEventDto.getStateAction();
         if (updateState != null) {
-            if ( updateState.equals(EventStateAction.PUBLISH_EVENT)) event.setState(EventStatus.PUBLISHED);
+            if (updateState.equals(EventStateAction.PUBLISH_EVENT)) event.setState(EventStatus.PUBLISHED);
             else if (updateState.equals(EventStateAction.REJECT_EVENT)) event.setState(EventStatus.CANCELED);
             else if (updateState.equals(EventStateAction.CANCEL_REVIEW)) event.setState(EventStatus.CANCELED);
             else event.setState(EventStatus.PENDING);
