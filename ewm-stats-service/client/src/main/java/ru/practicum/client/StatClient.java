@@ -13,7 +13,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import org.springframework.web.util.UriComponentsBuilder;
 import ru.practicum.dto.ShortStatDto;
 import ru.practicum.dto.StatDto;
 
@@ -28,6 +27,7 @@ public class StatClient {
 
     private final RestTemplate restTemplate;
     private HttpHeaders headers;
+    private final String serverUrl;
 
     @Autowired
     public StatClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -38,22 +38,23 @@ public class StatClient {
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        this.serverUrl = serverUrl;
     }
 
     public ResponseEntity<List<ShortStatDto>> sendGet(LocalDateTime start, LocalDateTime end,
-                                                      List<String> uris, boolean unique) {
-
+                                                      String[] uris, boolean unique) {
         HttpEntity entity = new HttpEntity(headers);
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("/stats")
-                .queryParam("start", start.format(FORMATTER))
-                .queryParam("end", end.format(FORMATTER))
-                .queryParam("uris", uris)
-                .queryParam("unique", unique);
-        return restTemplate.exchange(builder.toUriString(), HttpMethod.GET, entity,
-                new ParameterizedTypeReference<List<ShortStatDto>>() {});
+        return restTemplate.exchange("/stats?start={start}&end={end}&uris={uris}&unique={unique}", HttpMethod.GET, entity,
+                new ParameterizedTypeReference<>() {}, start.format(FORMATTER), end.format(FORMATTER), uris, unique);
     }
 
-    public ResponseEntity<StatDto> sendPost(StatDto statDto) {
+    public ResponseEntity<StatDto> sendPost(String app, String uri, String ip, LocalDateTime timestamp) {
+        StatDto statDto = StatDto.builder()
+                .app(app)
+                .uri(uri)
+                .ip(ip)
+                .timestamp(timestamp)
+                .build();
         HttpEntity<StatDto> entity = new HttpEntity(statDto, headers);
         return restTemplate.exchange("/hit", HttpMethod.POST, entity, StatDto.class);
     }
