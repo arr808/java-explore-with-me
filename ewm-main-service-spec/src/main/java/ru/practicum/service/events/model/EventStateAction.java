@@ -1,5 +1,5 @@
 package ru.practicum.service.events.model;
 
 public enum EventStateAction {
-    CANCEL_REVIEW, PUBLISH_EVENT, REJECT_EVENT
+    SEND_TO_REVIEW, CANCEL_REVIEW, PUBLISH_EVENT, REJECT_EVENT
 }
