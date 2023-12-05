@@ -3,6 +3,7 @@ package ru.practicum.service.categories.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.service.categories.dto.CategoryDto;
 import ru.practicum.service.categories.dto.NewCategoryDto;
 import ru.practicum.service.categories.model.Category;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -29,6 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CategoryDto> getAll(int from, int size) {
         Pageable pageRequest = PaginationAndSortParams.getPageable(from, size);
         return categoryRepository.findAll(pageRequest).stream()
@@ -37,6 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CategoryDto getById(long id) {
         Category category = categoryRepository.findById(id).orElseThrow(() ->
                 new NotFoundException(String.format("Category with id=%d was not found", id)));
@@ -50,9 +54,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto update(NewCategoryDto updateCategory, long id) {
-        getById(id);
-        Category category = categoryRepository.save(Mapper.fromDto(updateCategory, id));
+    public CategoryDto update(CategoryDto updateCategory) {
+        getById(updateCategory.getId());
+        Category category = categoryRepository.save(Mapper.fromDto(updateCategory));
         return Mapper.toDto(category);
     }
 
@@ -60,7 +64,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void delete(long id) {
         Category category = categoryRepository.findById(id).orElseThrow(() ->
                 new NotFoundException(String.format("Category with id=%d was not found", id)));
-        if (eventRepository.findAllByCategoryId(id).size() > 0) throw new IncorrectlyRequestException("Event exist");
+        if (eventRepository.countByCategoryId(id) > 0) throw new IncorrectlyRequestException("Event exist");
         categoryRepository.delete(category);
     }
 }

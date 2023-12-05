@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,29 +21,30 @@ import java.util.List;
 
 @Slf4j
 @RestController
-public class RequestController {
+@RequestMapping("/users/{userId}")
+public class PrivateRequestController {
 
     private final RequestService requestService;
 
     @Autowired
-    public RequestController(RequestService requestService) {
+    public PrivateRequestController(RequestService requestService) {
         this.requestService = requestService;
     }
 
-    @GetMapping("/users/{userId}/events/{eventId}/requests")
+    @GetMapping("/events/{eventId}/requests")
     public List<ParticipationRequestDto> getAllByUserIdAndEventId(@PathVariable long userId,
                                                          @PathVariable long eventId) {
         log.info("Получен запрос GET /users/{}/events/{}/requests", userId, eventId);
         return requestService.getAllByUserIdAndEventId(userId, eventId);
     }
 
-    @GetMapping("/users/{userId}/requests")
+    @GetMapping("/requests")
     public List<ParticipationRequestDto> getAllByUserId(@PathVariable long userId) {
         log.info("Получен запрос GET /users/{}/requests", userId);
         return requestService.getAllByUserId(userId);
     }
 
-    @PostMapping("/users/{userId}/requests")
+    @PostMapping("/requests")
     @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto add(@PathVariable long userId,
                                        @RequestParam long eventId) {
@@ -50,18 +52,18 @@ public class RequestController {
         return requestService.add(userId, eventId);
     }
 
-    @PatchMapping("/users/{userId}/requests/{requestId}/cancel")
+    @PatchMapping("/requests/{requestId}/cancel")
     public ParticipationRequestDto cancelRequest(@PathVariable long userId,
                                                  @PathVariable long requestId) {
         log.info("Получен запрос PATCH /users/{}/requests/{}/cancel", userId, requestId);
         return requestService.cancelRequest(userId, requestId);
     }
 
-    @PatchMapping("/users/{userId}/events/{eventId}/requests")
+    @PatchMapping("/events/{eventId}/requests")
     public EventRequestStatusUpdateResult setRequestApprove(@PathVariable long userId,
                                                             @PathVariable long eventId,
                                                             @RequestBody EventRequestStatusUpdateRequest updateRequest) {
         log.info("Получен запрос PATCH /users/{}/events/{}/requests", userId, eventId);
-        return requestService.setRequestApprove(userId, eventId, updateRequest);
+        return requestService.changeRequestStatus(userId, eventId, updateRequest);
     }
 }

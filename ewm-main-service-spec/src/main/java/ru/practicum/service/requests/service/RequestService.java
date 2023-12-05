@@ -16,5 +16,5 @@ public interface RequestService {
 
     ParticipationRequestDto cancelRequest(long userId, long requestId);
 
-    EventRequestStatusUpdateResult setRequestApprove(long userId, long eventId, EventRequestStatusUpdateRequest updateRequest);
+    EventRequestStatusUpdateResult changeRequestStatus(long userId, long eventId, EventRequestStatusUpdateRequest updateRequest);
 }

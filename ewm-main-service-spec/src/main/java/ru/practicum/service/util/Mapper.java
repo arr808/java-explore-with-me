@@ -68,10 +68,10 @@ public class Mapper {
                 .build();
     }
 
-    public static Category fromDto(NewCategoryDto updateDto, long id) {
+    public static Category fromDto(CategoryDto categoryDto) {
         return Category.builder()
-                .id(id)
-                .name(updateDto.getName())
+                .id(categoryDto.getId())
+                .name(categoryDto.getName())
                 .build();
     }
 

@@ -55,7 +55,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto add(long userId, long eventId) {
-        if (requestRepository.findAllByRequesterIdAndEventId(userId, eventId).size() > 0) {
+        if (requestRepository.countByRequesterIdAndEventId(userId, eventId) > 0) {
             throw new IncorrectlyRequestException(String.format("User with id=%d already participates", userId));
         }
         Event event = eventRepository.findById(eventId).orElseThrow(() ->
@@ -101,8 +101,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public EventRequestStatusUpdateResult setRequestApprove(long userId, long eventId,
-                                                            EventRequestStatusUpdateRequest updateRequest) {
+    public EventRequestStatusUpdateResult changeRequestStatus(long userId, long eventId,
+                                                              EventRequestStatusUpdateRequest updateRequest) {
         Event event = eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException(String.format("Event with id=%d was not found", eventId)));
 

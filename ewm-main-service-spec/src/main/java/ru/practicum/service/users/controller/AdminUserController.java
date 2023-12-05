@@ -17,37 +17,39 @@ import ru.practicum.service.users.dto.UserDto;
 import ru.practicum.service.users.service.UserService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping
-public class UserController {
+@RequestMapping("/admin/users")
+public class AdminUserController {
 
     private final UserService userService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public AdminUserController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/admin/users")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<UserDto> get(@RequestParam(required = false, defaultValue = "") List<Long> ids,
-                             @RequestParam(required = false, defaultValue = "0") int from,
-                             @RequestParam(required = false, defaultValue = "10") int size) {
+                             @PositiveOrZero @RequestParam(required = false, defaultValue = "0") int from,
+                             @Positive @RequestParam(required = false, defaultValue = "10") int size) {
         log.info("Получен запрос GET /admin/users?ids={}from={}&size={}", ids, from, size);
         return userService.getAll(ids, from, size);
     }
 
-    @PostMapping("/admin/users")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto add(@Valid @RequestBody NewUserDto newUserDto) {
         log.info("Получен запрос POST /admin/users");
         return userService.add(newUserDto);
     }
 
-    @DeleteMapping("/admin/users/{userId}")
+    @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable long userId) {
         log.info("Получен запрос DELETE /admin/users/{}", userId);

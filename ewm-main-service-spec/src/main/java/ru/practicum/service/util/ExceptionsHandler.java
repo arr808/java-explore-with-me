@@ -5,11 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.service.categories.controller.CategoryController;
-import ru.practicum.service.compilations.controller.CompilationController;
-import ru.practicum.service.events.controller.EventController;
-import ru.practicum.service.requests.controller.RequestController;
-import ru.practicum.service.users.controller.UserController;
+import ru.practicum.service.categories.controller.PublicCategoryController;
+import ru.practicum.service.compilations.controller.AdminCompilationController;
+import ru.practicum.service.events.controller.AdminEventController;
+import ru.practicum.service.requests.controller.PrivateRequestController;
+import ru.practicum.service.users.controller.AdminUserController;
 import ru.practicum.service.util.exceptions.ForbiddenException;
 import ru.practicum.service.util.exceptions.IncorrectlyRequestException;
 import ru.practicum.service.util.exceptions.NotFoundException;
@@ -17,11 +17,11 @@ import ru.practicum.service.util.exceptions.NotFoundException;
 import java.time.LocalDateTime;
 
 @Slf4j
-@RestControllerAdvice(assignableTypes = {UserController.class,
-                                         CategoryController.class,
-                                         EventController.class,
-                                         RequestController.class,
-                                         CompilationController.class})
+@RestControllerAdvice(assignableTypes = {AdminUserController.class,
+                                         PublicCategoryController.class,
+                                         AdminEventController.class,
+                                         PrivateRequestController.class,
+                                         AdminCompilationController.class})
 public class ExceptionsHandler {
 
     private static final String INCORRECTLY = "Incorrectly made request.";

@@ -41,8 +41,8 @@ public class StatClient {
         this.serverUrl = serverUrl;
     }
 
-    public ResponseEntity<List<ShortStatDto>> sendGet(LocalDateTime start, LocalDateTime end,
-                                                      String[] uris, boolean unique) {
+    public ResponseEntity<List<ShortStatDto>> getStats(LocalDateTime start, LocalDateTime end,
+                                                       String[] uris, boolean unique) {
         HttpEntity entity = new HttpEntity(headers);
         return restTemplate.exchange("/stats?start={start}&end={end}&uris={uris}&unique={unique}", HttpMethod.GET, entity,
                 new ParameterizedTypeReference<>() {}, start.format(FORMATTER), end.format(FORMATTER), uris, unique);

@@ -188,8 +188,7 @@ public class EventServiceImpl implements EventService {
     private long getViews(Event event) {
         String uri = "/events/" + event.getId();
 
-        List<ShortStatDto> stats = statClient.sendGet(event.getPublishedOn().minusMinutes(1), LocalDateTime.now(), new String[]{uri}, true).getBody();
-        System.out.println(stats);
+        List<ShortStatDto> stats = statClient.getStats(event.getPublishedOn().minusMinutes(1), LocalDateTime.now(), new String[]{uri}, true).getBody();
         return stats.size();
     }
 }

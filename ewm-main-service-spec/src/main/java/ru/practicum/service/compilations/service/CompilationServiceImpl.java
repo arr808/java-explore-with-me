@@ -3,6 +3,7 @@ package ru.practicum.service.compilations.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.service.compilations.dto.CompilationDto;
 import ru.practicum.service.compilations.dto.NewCompilationDto;
 import ru.practicum.service.compilations.dto.UpdateCompilationRequest;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationRepository compilationRepository;
@@ -29,6 +31,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CompilationDto> getAll(boolean pinned, int from, int size) {
         Pageable pageRequest = PaginationAndSortParams.getPageable(from, size);
         if (pinned) {
@@ -43,6 +46,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CompilationDto getById(long id) {
         return Mapper.toDto(compilationRepository.findById(id).orElseThrow(() ->
                 new NotFoundException(String.format("Compilation with id=%d was not found", id))));
