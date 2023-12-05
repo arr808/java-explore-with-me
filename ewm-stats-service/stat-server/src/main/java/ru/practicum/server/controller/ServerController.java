@@ -3,6 +3,7 @@ package ru.practicum.server.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,14 +35,14 @@ public class ServerController {
     }
 
     @GetMapping("/stats")
-    public List<ShortStatDto> get(@RequestParam(name = "start") String startStr,
-                                  @RequestParam(name = "end") String endStr,
-                                  @RequestParam(required = false) List<String> uris,
-                                  @RequestParam(defaultValue = "false") Boolean unique) {
+    public ResponseEntity<List<ShortStatDto>> get(@RequestParam(name = "start") String startStr,
+                                                  @RequestParam(name = "end") String endStr,
+                                                  @RequestParam(required = false) List<String> uris,
+                                                  @RequestParam(defaultValue = "false") Boolean unique) {
         log.info("Получен запрос GET /stats?start={}&end={}&uris={}&unique={}", startStr, endStr, uris, unique);
         LocalDateTime start = LocalDateTime.parse(startStr, FORMATTER);
         LocalDateTime end = LocalDateTime.parse(endStr, FORMATTER);
-        return service.get(start, end, uris, unique);
+        return ResponseEntity.ok(service.get(start, end, uris, unique));
     }
 
     @PostMapping("/hit")

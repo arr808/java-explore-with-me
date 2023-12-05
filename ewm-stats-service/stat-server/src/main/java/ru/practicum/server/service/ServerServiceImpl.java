@@ -8,6 +8,7 @@ import ru.practicum.dto.ShortStatDto;
 import ru.practicum.dto.StatDto;
 import ru.practicum.server.model.Stat;
 import ru.practicum.server.repository.ServerRepository;
+import ru.practicum.server.util.BadRequestException;
 import ru.practicum.server.util.HitMapper;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,9 @@ public class ServerServiceImpl implements ServerService {
     @Override
     @Transactional(readOnly = true)
     public List<ShortStatDto> get(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
+        if (end.isBefore(start)) {
+            throw new BadRequestException();
+        }
         if (unique) return repository.findAllUniqueInUris(start, end, uris);
         return repository.findAllNotUniqueInUris(start, end, uris);
     }
