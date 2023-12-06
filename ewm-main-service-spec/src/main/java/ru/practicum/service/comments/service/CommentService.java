@@ -10,17 +10,17 @@ import java.util.List;
 
 public interface CommentService {
 
-    List<CommentFullDto> getAll(long eventId);
+    List<CommentFullDto> getAll(long eventId, int from, int size);
 
     CommentFullDto changeCommentStatus(long eventId, long commentId, CommentStateAction state);
 
     void delete(long commentId);
 
-    List<CommentFullDto> getAll(long eventId, long userId);
+    List<CommentFullDto> getAll(long eventId, long userId, int from, int size);
 
     CommentDto add(long eventId, long userId, NewCommentDto newCommentDto);
 
     CommentDto update(long eventId, long userId, UpdateCommentDto updateCommentDto);
 
-    List<CommentDto> getAllByEventId(long eventId);
+    List<CommentDto> getAllByEventId(long eventId, int from, int size);
 }

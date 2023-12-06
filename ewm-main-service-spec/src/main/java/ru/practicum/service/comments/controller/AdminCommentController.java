@@ -13,6 +13,8 @@ import ru.practicum.service.comments.dto.CommentFullDto;
 import ru.practicum.service.comments.model.CommentStateAction;
 import ru.practicum.service.comments.service.CommentService;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -28,9 +30,11 @@ public class AdminCommentController {
     }
 
     @GetMapping
-    public List<CommentFullDto> getAll(@PathVariable long eventId) {
-        log.info("Получен запрос GET /admin/events/{}/comments", eventId);
-        return commentService.getAll(eventId);
+    public List<CommentFullDto> getAll(@PathVariable long eventId,
+                                       @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                       @Positive @RequestParam(defaultValue = "10") int size) {
+        log.info("Получен запрос GET /admin/events/{}/comments?from={}&size={}", eventId, from, size);
+        return commentService.getAll(eventId, from, size);
     }
 
     @PatchMapping("/{commentId}")

@@ -1,12 +1,14 @@
 package ru.practicum.service.comments.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.service.comments.dto.CommentDto;
 import ru.practicum.service.comments.dto.CommentFullDto;
 import ru.practicum.service.comments.dto.NewCommentDto;
 import ru.practicum.service.comments.dto.UpdateCommentDto;
 import ru.practicum.service.comments.model.Comment;
 import ru.practicum.service.comments.model.CommentStateAction;
+import ru.practicum.service.comments.model.CommentStatus;
 import ru.practicum.service.comments.repository.CommentRepository;
 import ru.practicum.service.events.model.Event;
 import ru.practicum.service.events.repository.EventRepository;
@@ -15,6 +17,7 @@ import ru.practicum.service.requests.repository.RequestRepository;
 import ru.practicum.service.users.model.User;
 import ru.practicum.service.users.repository.UserRepository;
 import ru.practicum.service.util.Mapper;
+import ru.practicum.service.util.PaginationAndSortParams;
 import ru.practicum.service.util.exceptions.ForbiddenException;
 import ru.practicum.service.util.exceptions.NotFoundException;
 
@@ -40,16 +43,22 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentFullDto> getAll(long eventId) {
+    public List<CommentFullDto> getAll(long eventId, int from, int size) {
         checkEvent(eventId);
-        return commentRepository.findAllByEventId(eventId).stream()
+        Pageable pageRequest = PaginationAndSortParams.getPageable(from, size);
+        return commentRepository.findAllByEventId(eventId, pageRequest).stream()
                 .map(Mapper::toFullDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public CommentFullDto changeCommentStatus(long eventId, long commentId, CommentStateAction state) {
-        return null;
+        checkEvent(eventId);
+        Comment comment = checkComment(commentId);
+        if (state.equals(CommentStateAction.PUBLISH)) {
+            comment.setStatus(CommentStatus.PUBLISHED);
+        } else comment.setStatus(CommentStatus.REJECTED);
+        return Mapper.toFullDto(commentRepository.save(comment));
     }
 
     @Override
@@ -60,14 +69,14 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentFullDto> getAll(long eventId, long userId) {
+    public List<CommentFullDto> getAll(long eventId, long userId, int from, int size) {
         Event event = checkEvent(eventId);
         checkUser(userId);
-
+        Pageable pageRequest = PaginationAndSortParams.getPageable(from, size);
         if (event.getInitiator().getId() != userId) {
             throw new ForbiddenException("User is not initiator");
         }
-        return commentRepository.findAllByEventId(eventId).stream()
+        return commentRepository.findAllByEventId(eventId, pageRequest).stream()
                 .map(Mapper::toFullDto)
                 .collect(Collectors.toList());
     }
@@ -83,13 +92,22 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDto update(long eventId, long userId, UpdateCommentDto updateCommentDto) {
-        return null;
+        checkEvent(eventId);
+        checkUser(userId);
+        Comment comment = checkComment(updateCommentDto.getId());
+        if (userId != comment.getAuthor().getId()) {
+            throw new NotFoundException(String.format("User id=%d is not author", userId));
+        }
+
+        comment.setText(updateCommentDto.getText());
+        return Mapper.toDto(commentRepository.save(comment));
     }
 
     @Override
-    public List<CommentDto> getAllByEventId(long eventId) {
+    public List<CommentDto> getAllByEventId(long eventId, int from, int size) {
         checkEvent(eventId);
-        return commentRepository.findAllByEventId(eventId).stream()
+        Pageable pageRequest = PaginationAndSortParams.getPageable(from, size);
+        return commentRepository.findAllByEventId(eventId, pageRequest).stream()
                 .map(Mapper::toDto)
                 .collect(Collectors.toList());
     }
