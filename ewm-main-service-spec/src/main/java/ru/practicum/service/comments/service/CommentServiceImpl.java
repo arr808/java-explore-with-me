@@ -121,7 +121,7 @@ public class CommentServiceImpl implements CommentService {
                 .collect(Collectors.toList());
     }
 
-    private Event checkEvent (long eventId) {
+    private Event checkEvent(long eventId) {
         return eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException(String.format("Event with id=%d was not found", eventId)));
     }
