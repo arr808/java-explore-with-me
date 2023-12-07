@@ -32,5 +32,5 @@ public class Comment {
     LocalDateTime updated;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    CommentStatus status;
+    CommentStatus state;
 }

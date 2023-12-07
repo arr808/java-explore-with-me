@@ -2,6 +2,8 @@ package ru.practicum.service.comments.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.service.comments.dto.CommentDto;
 import ru.practicum.service.comments.dto.CommentFullDto;
 import ru.practicum.service.comments.dto.NewCommentDto;
@@ -21,9 +23,12 @@ import ru.practicum.service.util.PaginationAndSortParams;
 import ru.practicum.service.util.exceptions.ForbiddenException;
 import ru.practicum.service.util.exceptions.NotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
+@Transactional
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
@@ -43,6 +48,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CommentFullDto> getAll(long eventId, int from, int size) {
         checkEvent(eventId);
         Pageable pageRequest = PaginationAndSortParams.getPageable(from, size);
@@ -56,8 +62,8 @@ public class CommentServiceImpl implements CommentService {
         checkEvent(eventId);
         Comment comment = checkComment(commentId);
         if (state.equals(CommentStateAction.PUBLISH)) {
-            comment.setStatus(CommentStatus.PUBLISHED);
-        } else comment.setStatus(CommentStatus.REJECTED);
+            comment.setState(CommentStatus.PUBLISHED);
+        } else comment.setState(CommentStatus.REJECTED);
         return Mapper.toFullDto(commentRepository.save(comment));
     }
 
@@ -69,6 +75,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CommentFullDto> getAll(long eventId, long userId, int from, int size) {
         Event event = checkEvent(eventId);
         checkUser(userId);
@@ -96,14 +103,16 @@ public class CommentServiceImpl implements CommentService {
         checkUser(userId);
         Comment comment = checkComment(updateCommentDto.getId());
         if (userId != comment.getAuthor().getId()) {
-            throw new NotFoundException(String.format("User id=%d is not author", userId));
+            throw new ForbiddenException(String.format("User id=%d is not author", userId));
         }
 
         comment.setText(updateCommentDto.getText());
+        comment.setUpdated(LocalDateTime.now());
         return Mapper.toDto(commentRepository.save(comment));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CommentDto> getAllByEventId(long eventId, int from, int size) {
         checkEvent(eventId);
         Pageable pageRequest = PaginationAndSortParams.getPageable(from, size);
@@ -128,7 +137,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private void checkParticipation(long eventId, long userId) {
-        requestRepository.findByEventIdRequesterIdAndStatus(eventId, userId, RequestStatus.CONFIRMED).orElseThrow(() ->
+        requestRepository.findByEventIdAndRequesterIdAndStatus(eventId, userId, RequestStatus.CONFIRMED).orElseThrow(() ->
                 new NotFoundException(String.format("User with id=%d did not participate in Event with id=%d", userId, eventId)));
     }
 }

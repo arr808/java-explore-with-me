@@ -22,7 +22,7 @@ public class CommentDto {
     @NotNull
     UserShortDto author;
     @NotBlank
-    @Size(min = 1, max = 1200)
+    @Size(max = 1200)
     String text;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime created;

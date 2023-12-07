@@ -238,11 +238,12 @@ public class Mapper {
     public static CommentFullDto toFullDto(Comment comment) {
         return CommentFullDto.builder()
                 .id(comment.getId())
-                .author(comment.getAuthor())
+                .event(toShortDto(comment.getEvent()))
+                .author(toShortDto(comment.getAuthor()))
                 .text(comment.getText())
                 .created(comment.getCreated())
                 .updated(comment.getUpdated())
-                .status(comment.getStatus())
+                .status(comment.getState())
                 .build();
     }
 
@@ -252,7 +253,7 @@ public class Mapper {
                 .author(author)
                 .text(newCommentDto.getText())
                 .created(LocalDateTime.now())
-                .status(CommentStatus.PENDING)
+                .state(CommentStatus.PENDING)
                 .build();
     }
 }
