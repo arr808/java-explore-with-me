@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.service.comments.dto.CommentFullDto;
+import ru.practicum.service.comments.dto.CommentDto;
 import ru.practicum.service.comments.model.CommentStateAction;
 import ru.practicum.service.comments.service.CommentService;
 
@@ -32,15 +32,15 @@ public class AdminCommentController {
     }
 
     @GetMapping
-    public List<CommentFullDto> getAll(@PathVariable long eventId,
-                                       @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-                                       @Positive @RequestParam(defaultValue = "10") int size) {
+    public List<CommentDto> getAll(@PathVariable long eventId,
+                                   @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+                                   @Positive @RequestParam(defaultValue = "10") int size) {
         log.info("Получен запрос GET /admin/events/{}/comments?from={}&size={}", eventId, from, size);
         return commentService.getAll(eventId, from, size);
     }
 
     @PatchMapping("/{commentId}")
-    public CommentFullDto changeCommentStatus(@PathVariable long eventId,
+    public CommentDto changeCommentStatus(@PathVariable long eventId,
                                               @PathVariable long commentId,
                                               @RequestParam(name = "state") CommentStateAction state) {
         log.info("Получен запрос PATCH /admin/events/{}/comments/{}?state={}", eventId, commentId, state);

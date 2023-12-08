@@ -17,20 +17,20 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    private long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", referencedColumnName = "id")
-    Event event;
+    private Event event;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", referencedColumnName = "id")
-    User author;
+    private User author;
     @Column(length = 1200, nullable = false)
-    String text;
+    private String text;
     @Column(nullable = false)
-    LocalDateTime created;
+    private LocalDateTime created;
     @Column
-    LocalDateTime updated;
+    private LocalDateTime updated;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    CommentStatus state;
+    private CommentStatus state;
 }

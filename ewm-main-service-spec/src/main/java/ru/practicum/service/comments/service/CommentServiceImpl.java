@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.service.comments.dto.CommentDto;
-import ru.practicum.service.comments.dto.CommentFullDto;
 import ru.practicum.service.comments.dto.NewCommentDto;
 import ru.practicum.service.comments.dto.UpdateCommentDto;
 import ru.practicum.service.comments.model.Comment;
@@ -50,22 +49,22 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CommentFullDto> getAll(long eventId, int from, int size) {
+    public List<CommentDto> getAll(long eventId, int from, int size) {
         checkEvent(eventId);
         Pageable pageRequest = PaginationAndSortParams.getPageable(from, size);
         return commentRepository.findAllByEventId(eventId, pageRequest).stream()
-                .map(Mapper::toFullDto)
+                .map(Mapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public CommentFullDto changeCommentStatus(long eventId, long commentId, CommentStateAction state) {
+    public CommentDto changeCommentStatus(long eventId, long commentId, CommentStateAction state) {
         checkEvent(eventId);
         Comment comment = checkComment(commentId);
         if (state.equals(CommentStateAction.PUBLISH)) {
             comment.setState(CommentStatus.PUBLISHED);
         } else comment.setState(CommentStatus.REJECTED);
-        return Mapper.toFullDto(commentRepository.save(comment));
+        return Mapper.toDto(commentRepository.save(comment));
     }
 
     @Override
@@ -77,7 +76,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CommentFullDto> getAll(long eventId, long userId, int from, int size) {
+    public List<CommentDto> getAll(long eventId, long userId, int from, int size) {
         Event event = checkEvent(eventId);
         checkUser(userId);
         Pageable pageRequest = PaginationAndSortParams.getPageable(from, size);
@@ -85,12 +84,22 @@ public class CommentServiceImpl implements CommentService {
             throw new ForbiddenException("User is not initiator");
         }
         return commentRepository.findAllByEventId(eventId, pageRequest).stream()
-                .map(Mapper::toFullDto)
+                .map(Mapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public CommentDto add(long eventId, long userId, NewCommentDto newCommentDto) {
+    @Transactional
+    public CommentDto getPrivate(long userId, long commentId) {
+        checkUser(userId);
+        Comment comment = checkComment(commentId);
+        checkAuthor(userId, comment);
+        return Mapper.toDto(comment);
+    }
+
+    @Override
+    public CommentDto add(long userId, NewCommentDto newCommentDto) {
+        long eventId = newCommentDto.getEventId();
         Event event = checkEvent(eventId);
         User user = checkUser(userId);
         checkParticipation(eventId, userId);
@@ -99,17 +108,25 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDto update(long eventId, long userId, UpdateCommentDto updateCommentDto) {
+    public CommentDto update(long userId, UpdateCommentDto updateCommentDto) {
+        long eventId = updateCommentDto.getEventId();
         checkEvent(eventId);
         checkUser(userId);
         Comment comment = checkComment(updateCommentDto.getId());
-        if (userId != comment.getAuthor().getId()) {
-            throw new ForbiddenException(String.format("User id=%d is not author", userId));
-        }
+        checkAuthor(userId, comment);
 
         comment.setText(updateCommentDto.getText());
         comment.setUpdated(LocalDateTime.now());
+        comment.setState(CommentStatus.PENDING);
         return Mapper.toDto(commentRepository.save(comment));
+    }
+
+    @Override
+    public void delete(long userId, long commentId) {
+        checkUser(userId);
+        Comment comment = checkComment(commentId);
+        checkAuthor(userId, comment);
+        commentRepository.deleteById(commentId);
     }
 
     @Override
@@ -120,6 +137,14 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findAllByEventId(eventId, pageRequest).stream()
                 .map(Mapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CommentDto getPublic(long eventId, long commentId) {
+        checkEvent(eventId);
+        Comment comment = checkComment(commentId);
+        return Mapper.toDto(comment);
     }
 
     private Event checkEvent(long eventId) {
@@ -140,5 +165,11 @@ public class CommentServiceImpl implements CommentService {
     private void checkParticipation(long eventId, long userId) {
         requestRepository.findByEventIdAndRequesterIdAndStatus(eventId, userId, RequestStatus.CONFIRMED).orElseThrow(() ->
                 new NotFoundException(String.format("User with id=%d did not participate in Event with id=%d", userId, eventId)));
+    }
+
+    private void checkAuthor(long userId, Comment comment) {
+        if (userId != comment.getAuthor().getId()) {
+            throw new ForbiddenException(String.format("User id=%d is not author", userId));
+        }
     }
 }

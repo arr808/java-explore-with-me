@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/events/{eventId}/comments")
+@RequestMapping("/comments")
 public class PublicCommentController {
 
     private final CommentService commentService;
@@ -27,10 +27,17 @@ public class PublicCommentController {
     }
 
     @GetMapping
-    public List<CommentDto> getAll(@PathVariable long eventId,
+    public List<CommentDto> getAll(@Positive @RequestParam long eventId,
                                    @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                    @Positive @RequestParam(defaultValue = "10") int size) {
-        log.info("Получен запрос GET /events/{}/comments?from={}&size={}", eventId, from, size);
+        log.info("Получен запрос GET /comments?eventId={}from={}&size={}", eventId, from, size);
         return commentService.getAllByEventId(eventId, from, size);
+    }
+    
+    @GetMapping("/{commentId}")
+    public CommentDto get(@Positive @RequestParam long eventId,
+                          @PathVariable long commentId) {
+        log.info("Получен запрос GET /comments/{}?eventId={}", commentId, eventId);
+        return commentService.getPublic(eventId, commentId);
     }
 }

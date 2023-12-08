@@ -5,7 +5,6 @@ import ru.practicum.service.categories.dto.CategoryDto;
 import ru.practicum.service.categories.dto.NewCategoryDto;
 import ru.practicum.service.categories.model.Category;
 import ru.practicum.service.comments.dto.CommentDto;
-import ru.practicum.service.comments.dto.CommentFullDto;
 import ru.practicum.service.comments.dto.NewCommentDto;
 import ru.practicum.service.comments.model.Comment;
 import ru.practicum.service.comments.model.CommentStatus;
@@ -228,17 +227,6 @@ public class Mapper {
     public static CommentDto toDto(Comment comment) {
         return CommentDto.builder()
                 .id(comment.getId())
-                .author(toShortDto(comment.getAuthor()))
-                .text(comment.getText())
-                .created(comment.getCreated())
-                .updated(comment.getUpdated())
-                .build();
-    }
-
-    public static CommentFullDto toFullDto(Comment comment) {
-        return CommentFullDto.builder()
-                .id(comment.getId())
-                .event(toShortDto(comment.getEvent()))
                 .author(toShortDto(comment.getAuthor()))
                 .text(comment.getText())
                 .created(comment.getCreated())

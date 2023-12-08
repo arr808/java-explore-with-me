@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.service.comments.model.CommentStatus;
 import ru.practicum.service.users.dto.UserShortDto;
 
 import javax.validation.constraints.NotBlank;
@@ -18,14 +19,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommentDto {
     @NotNull
-    long id;
+    private long id;
     @NotNull
-    UserShortDto author;
+    private UserShortDto author;
     @NotBlank
     @Size(max = 1200)
-    String text;
+    private String text;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime created;
+    private LocalDateTime created;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime updated;
+    private LocalDateTime updated;
+    private CommentStatus status;
 }
