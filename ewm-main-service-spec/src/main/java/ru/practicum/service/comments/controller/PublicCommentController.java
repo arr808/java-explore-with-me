@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.service.comments.dto.CommentDto;
 import ru.practicum.service.comments.service.CommentService;
-
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
@@ -33,7 +32,7 @@ public class PublicCommentController {
         log.info("Получен запрос GET /comments?eventId={}from={}&size={}", eventId, from, size);
         return commentService.getAllByEventId(eventId, from, size);
     }
-    
+
     @GetMapping("/{commentId}")
     public CommentDto get(@Positive @RequestParam long eventId,
                           @PathVariable long commentId) {
