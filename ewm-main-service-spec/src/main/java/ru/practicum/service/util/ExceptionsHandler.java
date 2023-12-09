@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.service.categories.controller.AdminCategoryController;
 import ru.practicum.service.categories.controller.PublicCategoryController;
+import ru.practicum.service.comments.controller.AdminCommentController;
+import ru.practicum.service.comments.controller.PrivateCommentController;
+import ru.practicum.service.comments.controller.PublicCommentController;
 import ru.practicum.service.compilations.controller.AdminCompilationController;
 import ru.practicum.service.compilations.controller.PublicCompilationController;
 import ru.practicum.service.events.controller.AdminEventController;
@@ -29,7 +32,10 @@ import java.time.LocalDateTime;
         AdminCompilationController.class,
         PublicCompilationController.class,
         AdminCategoryController.class,
-        PublicCategoryController.class})
+        PublicCategoryController.class,
+        AdminCommentController.class,
+        PrivateCommentController.class,
+        PublicCommentController.class})
 public class ExceptionsHandler {
 
     private static final String INCORRECTLY = "Incorrectly made request.";

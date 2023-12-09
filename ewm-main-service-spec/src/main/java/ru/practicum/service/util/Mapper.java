@@ -4,6 +4,10 @@ import lombok.experimental.UtilityClass;
 import ru.practicum.service.categories.dto.CategoryDto;
 import ru.practicum.service.categories.dto.NewCategoryDto;
 import ru.practicum.service.categories.model.Category;
+import ru.practicum.service.comments.dto.CommentDto;
+import ru.practicum.service.comments.dto.NewCommentDto;
+import ru.practicum.service.comments.model.Comment;
+import ru.practicum.service.comments.model.CommentStatus;
 import ru.practicum.service.compilations.dto.CompilationDto;
 import ru.practicum.service.compilations.dto.NewCompilationDto;
 import ru.practicum.service.compilations.model.Compilation;
@@ -216,6 +220,28 @@ public class Mapper {
                 .events(new ArrayList<>())
                 .pinned(compilation.getPinned())
                 .title(compilation.getTitle())
+                .build();
+    }
+
+    //Comment
+    public static CommentDto toDto(Comment comment) {
+        return CommentDto.builder()
+                .id(comment.getId())
+                .author(toShortDto(comment.getAuthor()))
+                .text(comment.getText())
+                .created(comment.getCreated())
+                .updated(comment.getUpdated())
+                .status(comment.getState())
+                .build();
+    }
+
+    public static Comment fromDto(Event event, User author, NewCommentDto newCommentDto) {
+        return Comment.builder()
+                .event(event)
+                .author(author)
+                .text(newCommentDto.getText())
+                .created(LocalDateTime.now())
+                .state(CommentStatus.PENDING)
                 .build();
     }
 }
