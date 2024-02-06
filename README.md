@@ -1,4 +1,10 @@
-# java-explore-with-me
-Template repository for ExploreWithMe project.
+# ExploreWithMe
 
-https://github.com/arr808/java-explore-with-me/pull/4
+Многомодульный сервис - афиша мероприятий. API разделена на 3 части:
+**1. Публичная.**
+**2. Для авторизованных пользователей.**
+**3. Административная.**
+Отдельным сервисом реализован сбор статистики.
+
+Технологии:
+Java 11, Spring Boot 2.7, Spring JDBC, Postgresql.
